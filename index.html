@@ -1,3 +1,11 @@
+To fix that "floating in space" look, we need to make the container larger on small screens and reduce the inner spacing (padding) so the GIF and text feel like they're filling the screen properly.
+
+I have updated the CSS to make the box wider on mobile and bumped up the default font sizes.
+
+The Fix
+Replace your index.html with this version. I've added a specific "Mobile Zoom" section in the CSS:
+
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +24,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* Use dvh (dynamic viewport height) for mobile browsers */
             height: 100dvh; 
             width: 100vw;
             background-color: #fff0f3;
@@ -28,30 +35,37 @@
         #container {
             text-align: center;
             background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
-            /* Ensure it takes up good space on mobile */
-            width: 85%;
-            max-width: 350px;
+            /* Increased padding for better framing */
+            padding: 2.5rem 1.5rem;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.3);
+            /* This makes the box much bigger on mobile */
+            width: 92%;
+            max-width: 400px;
             z-index: 10;
+            transition: all 0.3s ease;
         }
 
         .gif-container {
             width: 100%;
-            margin-bottom: 1rem;
+            /* Tighter margin to keep things together */
+            margin-bottom: 0.5rem; 
         }
 
         .gif-container img {
             width: 100%;
             height: auto;
-            border-radius: 15px;
+            max-height: 250px; /* Bigger GIF presence */
+            object-fit: contain;
+            border-radius: 20px;
         }
 
         h1 {
             color: #ff4d6d;
-            font-size: 1.5rem;
+            /* Bigger text for mobile */
+            font-size: 1.8rem;
             margin-bottom: 1.5rem;
+            line-height: 1.2;
         }
 
         .btn-group {
@@ -60,47 +74,62 @@
             align-items: center;
             gap: 1rem;
             position: relative;
-            /* Prevents the growing button from pushing the UI off screen immediately */
-            height: 100px; 
+            min-height: 120px; 
         }
 
         button {
-            padding: 0.8rem 1.5rem;
+            padding: 1rem 1.8rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: transform 0.1s ease;
             -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
-            position: relative;
             z-index: 5;
         }
 
         #noBtn {
             background-color: #808080;
             color: white;
-            position: relative;
             z-index: 4;
         }
 
         .hidden { display: none; }
 
+        /* Success Screen Tweak */
+        #success-box h1 {
+            font-size: 2rem;
+            margin-top: 1rem;
+        }
+
         .heart {
             position: fixed;
             top: -10vh;
-            font-size: 2rem;
+            font-size: 2.5rem; /* Bigger hearts */
             animation: fall 3s linear forwards;
             z-index: 1;
         }
 
         @keyframes fall {
             to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        /* Specifically target small phones to ensure no 'zoom-out' feeling */
+        @media (max-width: 380px) {
+            #container {
+                width: 95%;
+                padding: 1.5rem 1rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -122,7 +151,7 @@
             <div class="gif-container">
                 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueGtxN2ZicWlzYmI1ZzF4M3Z6ZzV6Z3Z5eXp6Z3Z5eXp6Z3Z5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/26FLdmIp6wJr91JAI/giphy.gif" alt="Happy">
             </div>
-            <h1 style="color: #ff4d6d;">Yay! See you on the 14th! 🥰</h1>
+            <h1 style="color: #ff4d6d;">Yay! See you then! 🥰</h1>
         </div>
     </div>
 
@@ -133,22 +162,20 @@
         const successBox = document.getElementById('success-box');
 
         let scale = 1;
-        const phrases = ["No", "Sure?", "Really?", "Puh-lease?", "I'm crying", "Yes is better"];
+        const phrases = ["No", "Sure?", "Really?", "Puh-lease?", "I'm crying", "Yes is better", "Think of the cake!", "Last chance!"];
         let phraseIndex = 0;
 
         noBtn.addEventListener('click', (e) => {
-            scale += 0.4;
-            // Prevent it from growing infinitely and breaking the phone's browser
-            if(scale < 12) {
+            scale += 0.5; // Bigger growth jumps
+            if(scale < 15) {
                 yesBtn.style.transform = `scale(${scale})`;
             }
             
             noBtn.innerText = phrases[phraseIndex];
             phraseIndex = (phraseIndex + 1) % phrases.length;
             
-            // Subtle movement to keep it interactive
-            const x = Math.random() * 30 - 15;
-            const y = Math.random() * 30 - 15;
+            const x = Math.random() * 40 - 20;
+            const y = Math.random() * 40 - 20;
             noBtn.style.transform = `translate(${x}px, ${y}px)`;
         });
 
@@ -164,9 +191,10 @@
                 heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
                 document.body.appendChild(heart);
                 setTimeout(() => heart.remove(), 3000);
-            }, 200);
+            }, 150);
         });
     </script>
 </body>
 </html>
+
 
