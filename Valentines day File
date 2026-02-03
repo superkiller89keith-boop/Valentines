@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffe4e1; /* Light Pink */
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            transition: background-color 0.5s;
+        }
+
+        #container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 2rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        #yesBtn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #noBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        img {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div id="question-ui">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHIycXpueXF6em80eXp6Z3Z5eXp6Z3Z5eXp6Z3Z5eXp6Z3Z5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute Cat">
+            <h1>Will you be my Valentine? 🌹</h1>
+            <div class="buttons">
+                <button id="yesBtn">Yes</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+
+        <div id="success-ui" class="hidden">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHIycXpueXF6em80eXp6Z3Z5eXp6Z3Z5eXp6Z3Z5eXp6Z3Z5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/v1.Y2lkPTc5MGI3NjExOHIycXpueXF6em80eXp6Z3Z5eXp6Z3Z5eXp6Z3Z5eXp6Z3Z5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/26FLdmIp6wJr91JAI/giphy.gif" alt="Happy">
+            <h1>Yay! See you on the 14th! ❤️</h1>
+        </div>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const questionUI = document.getElementById('question-ui');
+        const successUI = document.getElementById('success-ui');
+
+        let yesFontSize = 1.2; 
+        const phrases = [
+            "No", "Are you sure?", "Really sure?", "Think again!", 
+            "Last chance!", "Surely not?", "You're breaking my heart ;(", 
+            "I'm gonna cry...", "Pleaaaase?"
+        ];
+        let phraseIndex = 0;
+
+        noBtn.addEventListener('click', () => {
+            // Make Yes button bigger
+            yesFontSize += 0.5;
+            yesBtn.style.fontSize = `${yesFontSize}rem`;
+            yesBtn.style.padding = `${yesFontSize * 10}px ${yesFontSize * 20}px`;
+
+            // Change No button text
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            noBtn.innerText = phrases[phraseIndex];
+            
+            // Slightly shrink the No button
+            let currentNoSize = parseFloat(window.getComputedStyle(noBtn).fontSize);
+            if (currentNoSize > 5) {
+                noBtn.style.fontSize = `${currentNoSize * 0.9}px`;
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            questionUI.classList.add('hidden');
+            successUI.classList.remove('hidden');
+            document.body.style.backgroundColor = '#ffb6c1';
+        });
+    </script>
+</body>
+</html>
