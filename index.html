@@ -1,50 +1,84 @@
+To make this perfect for a phone, we need to handle a few mobile-specific issues:
+
+Zooming: On mobile, when the "Yes" button grows, it can trigger the browser to zoom in or push buttons off-screen.
+
+Touch Delays: Some mobile browsers have a slight delay on clicks.
+
+Button Overlap: As "Yes" grows, it might cover the "No" button entirely, making it impossible for her to keep clicking "No" (which is the fun part!).
+
+Here is the refined, mobile-optimized version. I’ve updated the CSS to ensure the buttons stack nicely and the "Yes" button scales within the screen limits.
+
+Copy and Paste this into your index.html on GitHub:
+HTML
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You ❤️</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
             background-color: #fff0f3;
             font-family: 'Comic Sans MS', cursive, sans-serif;
             overflow: hidden;
+            touch-action: manipulation; /* Prevents double-tap zoom */
         }
 
         #container {
             text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 10px 20px rgba(255, 77, 109, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px 20px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
+            width: 90%;
             max-width: 400px;
-            position: relative;
             z-index: 10;
+            position: relative;
+        }
+
+        .gif-container {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .gif-container img {
-            width: 100%;
-            height: 200px;
-            object-fit: contain;
+            max-height: 100%;
+            max-width: 100%;
             border-radius: 15px;
-            margin-bottom: 20px;
         }
 
         h1 {
             color: #ff4d6d;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            line-height: 1.3;
+            margin-bottom: 25px;
+            min-height: 3rem;
         }
 
         .btn-group {
             display: flex;
+            flex-direction: row;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            min-height: 100px; /* Space for the growing button */
+            /* Keeps space for the growing button */
+            min-height: 150px; 
+            position: relative;
         }
 
         button {
@@ -54,20 +88,29 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 1rem;
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
+            z-index: 2; /* Keeps it on top */
         }
 
         #noBtn {
             background-color: #808080;
             color: white;
+            z-index: 1;
         }
 
         .hidden { display: none; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.3rem; }
+            button { padding: 10px 20px; }
+        }
 
         /* Falling Hearts */
         .heart {
@@ -76,6 +119,7 @@
             font-size: 2rem;
             animation: fall 3s linear forwards;
             z-index: 1;
+            pointer-events: none;
         }
 
         @keyframes fall {
@@ -90,8 +134,7 @@
             <div class="gif-container">
                 <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueGtxN2ZicWlzYmI1ZzF4M3Z6ZzV6Z3Z5eXp6Z3Z5eXp6Z3Z5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Asking">
             </div>
-          <h1> Dear Julianna, </h1>
-            <h1>Will you be my Valentine? 💖</h1>
+            <h1 id="main-text">Will you be my Valentine? 💖</h1>
             <div class="btn-group">
                 <button id="yesBtn">Yes</button>
                 <button id="noBtn">No</button>
@@ -111,26 +154,31 @@
         const noBtn = document.getElementById('noBtn');
         const questionBox = document.getElementById('question-box');
         const successBox = document.getElementById('success-box');
+        const mainText = document.getElementById('main-text');
 
         let scale = 1;
         const phrases = [
             "No", "Are you sure?", "Really sure??", "Think again!", 
-            "Baby please", "Don't do this to me", "I'm gonna cry...", 
-            "You're breaking my heart ;("
+            "Last chance!", "Pookie please", "Surely not?", 
+            "You're breaking my heart ;(", "I'm gonna cry...", "Just say yes!"
         ];
         let phraseIndex = 0;
 
-        noBtn.addEventListener('click', () => {
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             // Grow the Yes button
             scale += 0.5;
+            // Cap the size so it doesn't break the layout too much
+            if (scale > 15) scale = 15; 
+            
             yesBtn.style.transform = `scale(${scale})`;
             
-            // Move No button slightly
+            // Move No button so it's harder to hit on small screens
             const x = Math.random() * 40 - 20;
-            const y = Math.random() * 40 - 20;
+            const y = Math.random() * 20 - 10;
             noBtn.style.transform = `translate(${x}px, ${y}px)`;
 
-            // Change No text
+            // Update text
             noBtn.innerText = phrases[phraseIndex];
             phraseIndex = (phraseIndex + 1) % phrases.length;
         });
